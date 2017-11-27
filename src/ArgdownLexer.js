@@ -482,7 +482,7 @@ class ArgdownLexer {
 
         $.EscapedChar = createToken({
             name: "EscapedChar",
-            pattern: /\\./
+            pattern: /\\.(?: )*/
         });
         $.tokens.push($.EscapedChar);
 

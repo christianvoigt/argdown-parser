@@ -370,8 +370,8 @@ class ModelPlugin{
       const target = (currentHeading)? currentHeading : currentStatement;
       node.text = "";
       for(let child of node.children){
-        if(child.type == "EscapedChar"){
-          node.text += child.image[1];
+        if (tokenMatcher(child, ArgdownLexer.EscapedChar)) {
+          node.text += child.image.substring(1, child.image.length);
         }else{
           node.text += child.image;
         }
