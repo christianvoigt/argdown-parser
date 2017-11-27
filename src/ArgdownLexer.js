@@ -449,7 +449,7 @@ class ArgdownLexer {
 
         $.Comment = createToken({
             name: "Comment",
-            pattern: /(?:<!--(?:.|\n|\r)*?-->)|(?:\/\*(?:.|\n|\r)*?\*\/)|(?:\/\/.*?(\r\n|\n|\r))/,
+            pattern: /(?:<!--(?:.|\n|\r)*?-->)|(?:\/\*(?:.|\n|\r)*?\*\/)|(?:\/\/.*?(?=\r\n|\n|\r))/,
             group: chevrotain.Lexer.SKIPPED
         });
         $.tokens.push($.Comment);
