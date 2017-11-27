@@ -451,6 +451,7 @@ class ArgdownParser extends chevrotain.Parser {
             }, {
                 ALT: () => children.push($.CONSUME(lexer.StatementMention))
             }
+
             // , {
             //     ALT: () => children.push($.CONSUME(lexer.StatementMentionByNumber))
             // }
@@ -467,6 +468,8 @@ class ArgdownParser extends chevrotain.Parser {
                 ALT: () => children.push($.CONSUME(lexer.Freestyle))
             }, {
                 ALT: () => children.push($.CONSUME(lexer.UnusedControlChar))
+            },{
+                ALT: () => children.push($.CONSUME(lexer.EscapedChar))
             }]));
             return {
                 name: "freestyleText",

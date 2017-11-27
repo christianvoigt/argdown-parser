@@ -325,7 +325,7 @@ describe("Lexer", function () {
     expectToken(lexer.StatementDefinition);
     expectToken(lexer.Freestyle);
   });
-  it("can parse Windows line endings", function () {
+  it("can lex Windows line endings", function () {
     let source = fs.readFileSync("./test/lexer-windows-line-endings.argdown", 'utf8');
     const result = lexer.tokenize(source);
     startTest(result.tokens);
@@ -337,6 +337,23 @@ describe("Lexer", function () {
     expectToken(lexer.Freestyle);
     expectToken(lexer.Dedent);
   });
+  it("can lex escaped chars", function () {
+    let source = fs.readFileSync("./test/lexer-escaped-chars.argdown", 'utf8');
+    const result = lexer.tokenize(source);
+    startTest(result.tokens);
+    //console.log(lexer.tokensToString(result.tokens));
+    //expect(result.tokens.length).to.equal(5);
+    expectToken(lexer.Freestyle);
+    expectToken(lexer.EscapedChar);
+    expectToken(lexer.Freestyle);
+    expectToken(lexer.EscapedChar);
+    expectToken(lexer.Freestyle);
+    expectToken(lexer.EscapedChar);
+    expectToken(lexer.Freestyle);
+    expectToken(lexer.EscapedChar);
+    expectToken(lexer.EscapedChar);
+    expectToken(lexer.Freestyle);  
+  });  
   // it("can lex statement references, definitions and mentions by number", function () {
   //   let source = fs.readFileSync("./test/lexer-statements-by-number.argdown", 'utf8');
   //   const result = lexer.tokenize(source);

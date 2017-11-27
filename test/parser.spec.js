@@ -40,6 +40,14 @@ describe("Parser", function() {
     expect(lexResult.errors).to.be.empty;
     expect(parser.errors).to.exist;
   });
+  it("can escape characters", function () {
+    let source = "<Title>: text \\[text\\]";
+    let lexResult = lexer.tokenize(source);
+    parser.input = lexResult.tokens;
+    let parseResult = parser.argdown();
+    expect(lexResult.errors).to.be.empty;
+    expect(parser.errors).to.be.empty;
+  });
 });
 
 describe("ArgdownTreeWalker", function() {

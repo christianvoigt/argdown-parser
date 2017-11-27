@@ -449,7 +449,7 @@ class ArgdownLexer {
 
         $.Comment = createToken({
             name: "Comment",
-            pattern: /<!--(?:.|\n|\r)*?-->/,
+            pattern: /(?:<!--(?:.|\n|\r)*?-->)|(?:\/\*(?:.|\n|\r)*?\*\/)|(?:\/\/.*?(\r\n|\n|\r))/,
             group: chevrotain.Lexer.SKIPPED
         });
         $.tokens.push($.Comment);
@@ -480,10 +480,16 @@ class ArgdownLexer {
         });
         $.tokens.push($.Spaces);
 
+        $.EscapedChar = createToken({
+            name: "EscapedChar",
+            pattern: /\\./
+        });
+        $.tokens.push($.EscapedChar);
+
         //The rest of the text that is free of any Argdown syntax
         $.Freestyle = createToken({
             name: "Freestyle",
-            pattern: /[^\@\#\*\_\[\]\,\:\;\<\/\>\-\r\n\(\)]+/
+            pattern: /[^\\\@\#\*\_\[\]\,\:\;\<\/\>\-\r\n\(\)]+/
         });
         $.tokens.push($.Freestyle);
 
@@ -501,6 +507,7 @@ class ArgdownLexer {
             modes: {
                 "default_mode": [
                     $.Comment,
+                    $.EscapedChar, //must come first after $.Comment
                     $.Emptyline,
                     // Relation tokens must appear before Spaces, otherwise all indentation will always be consumed as spaces.
                     // Dedent must appear before Indent for handling zero spaces dedents.

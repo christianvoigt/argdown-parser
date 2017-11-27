@@ -370,7 +370,11 @@ class ModelPlugin{
       const target = (currentHeading)? currentHeading : currentStatement;
       node.text = "";
       for(let child of node.children){
-        node.text += child.image;
+        if(child.type == "EscapedChar"){
+          node.text += child.image[1];
+        }else{
+          node.text += child.image;
+        }
       }
       if(target){
         target.text += node.text;        
