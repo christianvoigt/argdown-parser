@@ -18,10 +18,10 @@ class ArgdownLexer {
     getCurrentLine(matchedTokens) {
         const matchedTokensIsEmpty = _.isEmpty(matchedTokens);
         if (matchedTokensIsEmpty)
-            return 0;
+            return 1;
 
         let last = _.last(matchedTokens);
-        let currentLine = (last)? last.endLine : 0;
+        let currentLine = (last)? last.endLine : 1;
         if (last && chevrotain.tokenMatcher(last, this.Emptyline))
             currentLine++;
         return currentLine;
@@ -30,12 +30,12 @@ class ArgdownLexer {
     emitRemainingDedentTokens(matchedTokens) {
         if (this.indentStack.length <= 1)
             return;
-        const lastToken = _.last(matchedTokens.tokens);
-        const startOffset = (lastToken) ? lastToken.endOffset : 0;
+        const lastToken = _.last(matchedTokens);
+        const startOffset = (lastToken) ? lastToken.endOffset + 1 : 0; 
         const endOffset = startOffset;
-        const startLine = (lastToken) ? lastToken.endLine : 0;
+        const startLine = (lastToken) ? lastToken.endLine + 1 : 1; //+1 because of linebreak before indentation
         const endLine = startLine;
-        const startColumn = (lastToken) ? lastToken.endColumn : 0;
+        const startColumn = 1;
         const endColumn = startColumn;
 
         //add remaining Dedents
@@ -50,12 +50,12 @@ class ArgdownLexer {
         const lastIndentLevel = _.last(this.indentStack);
         const image = "";
         const last = _.last(matchedTokens);
-        const startOffset = (last) ? last.endOffset + 1 : 0;
-        const endOffset = startOffset;
-        const startLine = this.getCurrentLine(matchedTokens, groups.nl);
-        const endLine = startLine;
-        const startColumn = (last) ? last.endColumn + 1 : 0;
-        const endColumn = startColumn;
+        const startOffset = (last) ? last.endOffset + 2 : 0; //+2 because of linebreak before indentation
+        const endOffset = startOffset + indentStr.length - 1;
+        const startLine = this.getCurrentLine(matchedTokens, groups.nl) + 1;//relation includes linebreak
+        const endLine = startLine; 
+        const startColumn = 1;
+        const endColumn = startColumn + indentStr.length - 1;
         if (currIndentLevel > lastIndentLevel) {
             this.indentStack.push(currIndentLevel);
             let indentToken = createTokenInstance(this.Indent, image, startOffset, endOffset, startLine, endLine, startColumn, endColumn);
@@ -97,41 +97,48 @@ class ArgdownLexer {
 
         $.IncomingSupport = createToken({
             name: "IncomingSupport",
-            pattern: matchIncomingSupport
+            pattern: matchIncomingSupport,
+            line_breaks: true
         });
         $.tokens.push($.IncomingSupport);
 
         $.IncomingAttack = createToken({
             name: "IncomingAttack",
-            pattern: matchIncomingAttack
+            pattern: matchIncomingAttack,
+            line_breaks: true
         });
         $.tokens.push($.IncomingAttack);
 
         $.OutgoingSupport = createToken({
             name: "OutgoingSupport",
-            pattern: matchOutgoingSupport
+            pattern: matchOutgoingSupport,
+            line_breaks: true
         });
         $.tokens.push($.OutgoingSupport);
 
         $.OutgoingAttack = createToken({
             name: "OutgoingAttack",
-            pattern: matchOutgoingAttack
+            pattern: matchOutgoingAttack,
+            line_breaks: true
         });
         $.tokens.push($.OutgoingAttack);
 
         $.Contradiction = createToken({
             name: "Contradiction",
-            pattern: matchContradiction
+            pattern: matchContradiction,
+            line_breaks: true
         });
         $.tokens.push($.Contradiction);
         $.IncomingUndercut = createToken({
             name: "IncomingUndercut",
-            pattern: matchIncomingUndercut
+            pattern: matchIncomingUndercut,
+            line_breaks: true
         });
         $.tokens.push($.IncomingUndercut);
         $.OutgoingUndercut = createToken({
             name: "OutgoingUndercut",
-            pattern: matchOutgoingUndercut
+            pattern: matchOutgoingUndercut,
+            line_breaks: true
         });
         $.tokens.push($.OutgoingUndercut);
 
@@ -152,7 +159,8 @@ class ArgdownLexer {
         $.InferenceStart = createToken({
             name: "InferenceStart",
             pattern: matchInferenceStart,
-            push_mode: "inference_mode"
+            push_mode: "inference_mode",
+            line_breaks: true            
         });
         $.tokens.push($.InferenceStart);
 
@@ -210,7 +218,8 @@ class ArgdownLexer {
 
         $.OrderedListItem = createToken({
             name: "OrderedListItem",
-            pattern: matchOrderedListItem
+            pattern: matchOrderedListItem,
+            line_breaks: true            
         });
         $.tokens.push($.OrderedListItem);
         //whitespace + * + whitespace (to distinguish list items from bold and italic ranges)
@@ -219,7 +228,8 @@ class ArgdownLexer {
 
         $.UnorderedListItem = createToken({
             name: "UnorderedListItem",
-            pattern: matchUnorderedListItem
+            pattern: matchUnorderedListItem,
+            line_breaks: true            
         });
         $.tokens.push($.UnorderedListItem);
 
@@ -242,7 +252,8 @@ class ArgdownLexer {
         }
         $.Emptyline = createToken({
             name: "Emptyline",
-            pattern: matchEmptyline
+            pattern: matchEmptyline,
+            line_breaks: true            
         });
         $.tokens.push($.Emptyline);
 
@@ -315,7 +326,8 @@ class ArgdownLexer {
         }
         $.StatementNumber = createToken({
             name: "StatementNumber",
-            pattern: matchStatementNumber
+            pattern: matchStatementNumber,
+            line_breaks: true            
         });
         $.tokens.push($.StatementNumber);
 
@@ -450,7 +462,8 @@ class ArgdownLexer {
         $.Comment = createToken({
             name: "Comment",
             pattern: /(?:<!--(?:.|\n|\r)*?-->)|(?:\/\*(?:.|\n|\r)*?\*\/)|(?:\/\/.*?(?=\r\n|\n|\r))/,
-            group: chevrotain.Lexer.SKIPPED
+            group: chevrotain.Lexer.SKIPPED,
+            line_breaks: true            
         });
         $.tokens.push($.Comment);
 
@@ -469,7 +482,8 @@ class ArgdownLexer {
         $.Newline = createToken({
             name: "Newline",
             pattern: /(?:\r\n|\n|\r)/,
-            group: chevrotain.Lexer.SKIPPED
+            group: chevrotain.Lexer.SKIPPED,
+            line_breaks: true
         });
         $.tokens.push($.Newline);
 
@@ -489,7 +503,8 @@ class ArgdownLexer {
         //The rest of the text that is free of any Argdown syntax
         $.Freestyle = createToken({
             name: "Freestyle",
-            pattern: /[^\\\@\#\*\_\[\]\,\:\;\<\/\>\-\r\n\(\)]+/
+            pattern: /[^\\\@\#\*\_\[\]\,\:\;\<\/\>\-\r\n\(\)]+/,
+            line_breaks: true            
         });
         $.tokens.push($.Freestyle);
 
@@ -579,6 +594,14 @@ class ArgdownLexer {
           str += getTokenConstructor(token).tokenName + " " + token.image +"\n";
       }
       return str;
+    }
+    tokenLocationsToString(tokens){
+        let str = "";
+        for (let token of tokens) {
+            str += getTokenConstructor(token).tokenName + " " + token.image + "\n";
+            str += "startOffset: " + token.startOffset + " endOffset: " + token.endOffset +" startLine: "+token.startLine+" endLine: "+token.endLine+" startColumn: "+token.startColumn+" endColumn: "+token.endColumn+"\n\n";
+        }
+        return str;        
     }
     tokenize(text) {
         this.init();

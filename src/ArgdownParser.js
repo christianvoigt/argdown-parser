@@ -511,5 +511,5 @@ class ArgdownParser extends chevrotain.Parser {
 }
 
 module.exports = {
-    ArgdownParser: new ArgdownParser(null, ArgdownLexer)
+    ArgdownParser: new ArgdownParser("", ArgdownLexer)
 }
