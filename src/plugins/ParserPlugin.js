@@ -24,7 +24,6 @@ class ParserPlugin{
     if(!data.input){
       return data;
     }
-    const verbose = data.config && data.config.verbose;
     
     let lexResult = this.lexer.tokenize(data.input);
     data.tokens = lexResult.tokens; 
@@ -38,21 +37,21 @@ class ParserPlugin{
       logger.log("verbose", data.lexerErrors);
     }
     if(data.parserErrors && data.parserErrors.length > 0){
-      //add location if token is EOF
-      var lastToken = _.last(data.tokens);
-      for(let error of data.parserErrors){
-        if(error.token && tokenMatcher(error.token, chevrotain.EOF)){
-          const startLine = lastToken.endLine;
-          const endLine = startLine;
-          const startOffset = lastToken.endOffset;
-          const endOffset = startOffset;
-          const startColumn = lastToken.endColumn;
-          const endColumn = startColumn;
-          const newToken = chevrotain.createTokenInstance(chevrotain.EOF, "", startOffset, endOffset, startLine, endLine, startColumn, endColumn);
-          error.token = newToken;
-        }
-      }
-      logger.log("verbose", data.parserErrors);
+      // //add location if token is EOF
+      // var lastToken = _.last(data.tokens);
+      // for(let error of data.parserErrors){
+      //   if(error.token && tokenMatcher(error.token, chevrotain.EOF)){
+      //     const startLine = lastToken.endLine;
+      //     const endLine = startLine;
+      //     const startOffset = lastToken.endOffset;
+      //     const endOffset = startOffset;
+      //     const startColumn = lastToken.endColumn;
+      //     const endColumn = startColumn;
+      //     const newToken = chevrotain.createTokenInstance(chevrotain.EOF, "", startOffset, endOffset, startLine, endLine, startColumn, endColumn);
+      //     error.token = newToken;
+      //   }
+      // }
+      // logger.log("verbose", data.parserErrors);
     }
     return data;    
   }
