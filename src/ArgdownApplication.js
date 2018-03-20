@@ -100,7 +100,7 @@ class ArgdownApplication{
       };
     }
   }
-  runAsync(request, response){
+  async runAsync(request, response){
     let processorsToRun = null;
     this.logger.setLevel("error");
     let resp = response || {};
@@ -120,7 +120,6 @@ class ArgdownApplication{
       this.logger.log("verbose", "No processors to run.");
       return resp;
     }
-    let promise = new Promise((resolve)=>resolve(resp));
     for (let processorId of processorsToRun) {
       let processor = this.processors[processorId];
       if (!processor) {
@@ -129,27 +128,20 @@ class ArgdownApplication{
       }
 
       if (resp.ast && processor.walker) {
-        var wrappedWalk = () => {
-          processor.walker.walk(request, resp, this.logger); 
-          return resp; 
-        };
-        promise = promise.then(wrappedWalk);
+        processor.walker.walk(request, resp, this.logger);
+        return resp; 
       }
 
       for (let plugin of processor.plugins) {
         this.logger.log("verbose", "Running plugin: " + plugin.name);
         if (_.isFunction(plugin.runAsync)) {
-          promise = promise.then(()=>{return plugin.runAsync(request, resp, this.logger);});
+          await plugin.runAsync(request, resp, this.logger);
         } else if (_.isFunction(plugin.run)){
-          var wrappedRun = (resp)=>{
-            plugin.run(request, resp, this.logger);
-            return resp;
-          };
-          promise = promise.then(wrappedRun);
+          plugin.run(request, resp, this.logger);
         }
       }
     }
-    return promise;
+    return resp;
   }
   run(request, response){
     let processorsToRun = null;
