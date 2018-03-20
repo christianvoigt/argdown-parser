@@ -3,6 +3,8 @@ import {ArgdownLexer} from '../ArgdownLexer.js';
 import {ArgdownParser} from "../ArgdownParser.js";
 import * as chevrotain from 'chevrotain';
 
+const tokenMatcher = chevrotain.tokenMatcher;
+
 class ParserPlugin{
   set config(config){
     let previousSettings = this.settings;
