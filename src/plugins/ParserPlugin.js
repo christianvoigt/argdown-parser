@@ -3,8 +3,6 @@ import {ArgdownLexer} from '../ArgdownLexer.js';
 import {ArgdownParser} from "../ArgdownParser.js";
 import * as chevrotain from 'chevrotain';
 
-const tokenMatcher = chevrotain.tokenMatcher;
-
 class ParserPlugin{
   set config(config){
     let previousSettings = this.settings;
@@ -20,40 +18,39 @@ class ParserPlugin{
     this.lexer = ArgdownLexer;
     this.parser = ArgdownParser;    
   }
-  run(data, logger){
-    if(!data.input){
-      return data;
+  run(request, response, logger){
+    if(!request.input){
+      return response;
     }
     
-    let lexResult = this.lexer.tokenize(data.input);
-    data.tokens = lexResult.tokens; 
-    data.lexerErrors = lexResult.errors;
+    let lexResult = this.lexer.tokenize(request.input);
+    response.tokens = lexResult.tokens; 
+    response.lexerErrors = lexResult.errors;
 
     this.parser.input = lexResult.tokens;
-    data.ast = this.parser.argdown();
-    data.parserErrors = this.parser.errors;
+    response.ast = this.parser.argdown();
+    response.parserErrors = this.parser.errors;
 
-    if(data.lexerErrors && data.lexerErrors.length > 0){
-      logger.log("verbose", data.lexerErrors);
+    if(response.lexerErrors && response.lexerErrors.length > 0){
+      logger.log("verbose", response.lexerErrors);
     }
-    if(data.parserErrors && data.parserErrors.length > 0){
+    if(response.parserErrors && response.parserErrors.length > 0){
       // //add location if token is EOF
-      // var lastToken = _.last(data.tokens);
-      // for(let error of data.parserErrors){
-      //   if(error.token && tokenMatcher(error.token, chevrotain.EOF)){
-      //     const startLine = lastToken.endLine;
-      //     const endLine = startLine;
-      //     const startOffset = lastToken.endOffset;
-      //     const endOffset = startOffset;
-      //     const startColumn = lastToken.endColumn;
-      //     const endColumn = startColumn;
-      //     const newToken = chevrotain.createTokenInstance(chevrotain.EOF, "", startOffset, endOffset, startLine, endLine, startColumn, endColumn);
-      //     error.token = newToken;
-      //   }
-      // }
-      // logger.log("verbose", data.parserErrors);
+      var lastToken = _.last(response.tokens);
+      for(let error of response.parserErrors){
+        if(error.token && tokenMatcher(error.token, chevrotain.EOF)){
+          const startLine = lastToken.endLine;
+          const endLine = startLine;
+          const startOffset = lastToken.endOffset;
+          const endOffset = startOffset;
+          const startColumn = lastToken.endColumn;
+          const endColumn = startColumn;
+          const newToken = chevrotain.createTokenInstance(chevrotain.EOF, "", startOffset, endOffset, startLine, endLine, startColumn, endColumn);
+          error.token = newToken;
+        }
+      }
     }
-    return data;    
+    return response;    
   }
 }
 module.exports = {

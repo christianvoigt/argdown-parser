@@ -64,10 +64,10 @@ describe("ArgdownTreeWalker", function() {
     let source = "Hallo Welt!";
     let lexResult = lexer.tokenize(source);
     parser.input = lexResult.tokens;
-    let parseResult = parser.argdown();
+    let ast = parser.argdown();
     let statements = 0;
-    walker.on('statementEntry',(node)=>{statements++; expect(node.name).to.equal('statement');});
-    walker.walk(parseResult);
+    walker.on('statementEntry',(request, response, node)=>{statements++; expect(node.name).to.equal('statement');});
+    walker.walk({}, {ast: ast});
     expect(statements).to.equal(1);
   });
 });

@@ -1,5 +1,5 @@
 "use strict";
-
+require("core-js/modules/es6.promise");
 import {ArgdownLexer} from './ArgdownLexer.js';
 import {ArgdownParser} from "./ArgdownParser.js";
 import {ArgdownTreeWalker} from "./ArgdownTreeWalker.js";
