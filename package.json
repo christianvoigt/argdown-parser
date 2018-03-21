@@ -13,11 +13,9 @@
   "license": "MIT",
   "main": "lib/src/index.js",
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
     "chevrotain": "^2.0.2",
     "eventemitter3": "^3.0.0",
-    "lodash": "^4.17.4",
-    "regenerator-runtime": "^0.11.1"
+    "lodash": "^4.17.4"
   },
   "repository": {
     "type": "git",
